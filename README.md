@@ -96,6 +96,101 @@ Contains implementations of repositories, database models, and external provider
 
 ---
 
+## Design Decisions
+
+### Hexagonal Architecture
+
+**Decision:** Adopt hexagonal (ports and adapters) architecture.
+
+**Rationale:**
+- Separates business logic from technical concerns
+- Makes the codebase testable by allowing mock implementations
+- Facilitates switching providers (Stripe, PayPal, etc.) without changing business logic
+- Domain layer remains framework-agnostic
+
+### Async/Await Throughout
+
+**Decision:** Use async/await for all I/O operations (database, external providers).
+
+**Rationale:**
+- Improves performance under concurrent load
+- Non-blocking operations allow handling more requests
+- Aligns with FastAPI's async-first design
+- SQLAlchemy 2.0 has excellent async support
+
+### Idempotency Keys
+
+**Decision:** Require idempotency keys for all payment creation requests.
+
+**Rationale:**
+- Prevents duplicate charges from network retries
+- Ensures exactly-once semantics for payment operations
+- Clients can safely retry failed requests without side effects
+- Industry standard for payment APIs (Stripe, PayPal)
+
+### Retry with Exponential Backoff
+
+**Decision:** Automatically retry provider timeouts with exponential backoff (3 attempts, 1-8s delays).
+
+**Rationale:**
+- Transient network failures are common in payment processing
+- Reduces false negatives from temporary issues
+- Exponential backoff prevents overwhelming the provider
+- Only retries timeouts, not business errors (declined cards, insufficient funds)
+
+### Provider Abstraction
+
+**Decision:** Define a `PaymentProviderPort` interface with mock implementation.
+
+**Rationale:**
+- Decouples business logic from specific payment providers
+- Enables easy switching between providers (Stripe, PayPal, etc.)
+- Simplifies testing with deterministic mock responses
+- Allows A/B testing different providers in production
+
+### SQLAlchemy Async with Alembic
+
+**Decision:** Use SQLAlchemy 2.0 async with Alembic for migrations.
+
+**Rationale:**
+- Type-safe ORM with excellent async support
+- Database-agnostic queries (easy migration from SQLite to PostgreSQL)
+- Alembic provides version-controlled schema migrations
+- Async engine prevents blocking the event loop
+
+### SQLite for Development
+
+**Decision:** Use SQLite for local development and testing.
+
+**Rationale:**
+- Zero configuration - no database server required
+- Single file database - easy to reset and version control
+- Sufficient for development and small-scale deployments
+- Can easily migrate to PostgreSQL for production
+
+### Poetry for Dependency Management
+
+**Decision:** Use Poetry instead of pip/requirements.txt.
+
+**Rationale:**
+- Lock file ensures reproducible builds
+- Virtual environment management built-in
+- Better dependency resolution than pip
+- Standard tool in modern Python ecosystem
+
+### FastAPI
+
+**Decision:** Use FastAPI as the web framework.
+
+**Rationale:**
+- Native async support
+- Automatic OpenAPI/Swagger documentation
+- Type hints for request/response validation
+- High performance (comparable to Go/Node.js)
+- Excellent developer experience
+
+---
+
 ## Payment Lifecycle
 
 ```text
