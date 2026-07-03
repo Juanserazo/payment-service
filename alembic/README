@@ -1,1 +1,75 @@
-Generic single-database configuration.
+# Alembic Migrations Guide
+
+This directory contains database migration scripts for the payment service.
+
+## Commands
+
+### Generate a New Migration
+
+After making changes to your SQLAlchemy models, generate a new migration:
+
+```bash
+poetry run alembic revision --autogenerate -m "Description of changes"
+```
+
+### Apply Migrations
+
+To apply all pending migrations:
+
+```bash
+poetry run alembic upgrade head
+```
+
+To apply a specific migration:
+
+```bash
+poetry run alembic upgrade <revision_id>
+```
+
+### Rollback Migrations
+
+To rollback to the previous migration:
+
+```bash
+poetry run alembic downgrade -1
+```
+
+To rollback to a specific migration:
+
+```bash
+poetry run alembic downgrade <revision_id>
+```
+
+To rollback to the initial state (no migrations):
+
+```bash
+poetry run alembic downgrade base
+```
+
+### View Migration History
+
+```bash
+poetry run alembic history
+```
+
+### View Current Migration Status
+
+```bash
+poetry run alembic current
+```
+
+### View Migration Details
+
+To see the SQL that will be executed without actually running it:
+
+```bash
+poetry run alembic upgrade head --sql
+```
+
+## Important Notes
+
+- This project uses SQLAlchemy Async, so migrations run with async support
+- The database URL is configured in `alembic.ini`
+- Model metadata is imported from `app.infrastructure.database.base.Base`
+- Always review generated migrations before committing
+- Never edit existing migration files - create new ones instead
