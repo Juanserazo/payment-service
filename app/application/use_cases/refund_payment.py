@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 from app.domain.exceptions.payment_exceptions import (
+    InvalidRefundException,
     PaymentNotFoundException,
 )
 from app.domain.ports.payment_provider_port import (
@@ -35,6 +36,11 @@ class RefundPaymentUseCase:
         if not payment:
             raise PaymentNotFoundException(
                 f"Payment {payment_id} not found"
+            )
+
+        if amount > payment.amount:
+            raise InvalidRefundException(
+                "Refund amount cannot exceed original payment amount"
             )
 
         await self.provider.refund(
