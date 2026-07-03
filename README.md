@@ -497,10 +497,6 @@ GET /health
 
 ## Future Improvements
 
-- Docker support
-- Alembic migrations
-- Unit tests
-- Integration tests
 - Structured logging
 - Observability
 - PostgreSQL support
