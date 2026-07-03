@@ -25,6 +25,7 @@ ruff = "^0.15.20"
 
 [tool.pytest.ini_options]
 pythonpath = "."
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["poetry-core"]

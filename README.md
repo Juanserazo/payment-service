@@ -313,6 +313,54 @@ poetry run ruff check .
 
 ---
 
+## Database Migrations
+
+This project uses Alembic for database schema management.
+
+### Generate a New Migration
+
+After making changes to your SQLAlchemy models:
+
+```bash
+poetry run alembic revision --autogenerate -m "Description of changes"
+```
+
+### Apply Migrations
+
+To apply pending migrations:
+
+```bash
+poetry run alembic upgrade head
+```
+
+### Rollback Migrations
+
+To rollback to the previous migration:
+
+```bash
+poetry run alembic downgrade -1
+```
+
+To rollback to a specific migration:
+
+```bash
+poetry run alembic downgrade <revision_id>
+```
+
+### View Migration History
+
+```bash
+poetry run alembic history
+```
+
+### View Current Migration Status
+
+```bash
+poetry run alembic current
+```
+
+---
+
 ## Swagger Documentation
 
 ```text
